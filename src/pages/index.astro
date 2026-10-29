@@ -1,14 +1,362 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  profile,
+  sections,
+  demo,
+  caseStudies,
+  experience,
+  projects,
+  skills,
+  about,
+  contact,
+} from '../content';
+
+const featured = projects.filter((p) => p.featured);
+const earlier = projects.filter((p) => !p.featured);
+const isExternal = (href: string) => href.startsWith('http');
 ---
 
-<BaseLayout
-  title="Rafael Rios — Full-stack software engineer"
-  description="Full-stack engineer who ships AI agent workflows that people use at work."
->
-  <main class="column">
-    <h1>Rafael Rios</h1>
-    <p>Full-stack software engineer. Site under construction.</p>
-    <pre><code>SELECT name FROM projects WHERE featured = 1;</code></pre>
+<BaseLayout title={`${profile.name} — ${profile.title}`} description={profile.tagline}>
+  <main>
+    <header class="column hero">
+      <h1>{profile.name}</h1>
+      <p class="hero-title">{profile.title}</p>
+      <p class="hero-intro">{profile.intro}</p>
+      <p class="meta">{profile.location} · {profile.languages.join(', ')}</p>
+      <ul class="inline-links">
+        {
+          profile.links.map((link) => (
+            <li>
+              <a href={link.href} rel={isExternal(link.href) ? 'me' : undefined}>
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </header>
+
+    <section class="column column-wide" aria-labelledby="demo-title">
+      <h2 id="demo-title" class="sr-only">{sections.demo}</h2>
+      <figure class="demo-slot">
+        <div class="demo-slot-box" aria-hidden="true">{demo.placeholder}</div>
+        <figcaption class="meta">{demo.caption}</figcaption>
+      </figure>
+    </section>
+
+    <section class="column" aria-labelledby="work-title">
+      <h2 id="work-title">{sections.work}</h2>
+      <ul class="cards">
+        {
+          caseStudies.map((cs) => (
+            <li class="card">
+              <p class="label">{cs.org}</p>
+              <h3>{cs.title}</h3>
+              <p>{cs.summary}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="column" aria-labelledby="experience-title">
+      <h2 id="experience-title">{sections.experience}</h2>
+      <ol class="timeline">
+        {
+          experience.map((job) => (
+            <li>
+              <div class="row-head">
+                <h3>
+                  {job.company} <span class="muted">· {job.role}</span>
+                </h3>
+                <p class="label">
+                  {job.dates}
+                  {job.location && ` · ${job.location}`}
+                </p>
+              </div>
+              <p>{job.summary}</p>
+              {job.stack.length > 0 && <p class="stack">{job.stack.join(' · ')}</p>}
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="column" aria-labelledby="projects-title">
+      <h2 id="projects-title">{sections.projects}</h2>
+      <ul class="featured">
+        {
+          featured.map((p) => (
+            <li>
+              <div class="row-head">
+                <h3>{p.name}</h3>
+                {p.year && <p class="label">{p.year}</p>}
+              </div>
+              <p>{p.description}</p>
+              {p.stack.length > 0 && <p class="stack">{p.stack.join(' · ')}</p>}
+              <ul class="inline-links">
+                {p.links.map((link) => (
+                  <li>{link.href ? <a href={link.href}>{link.label}</a> : <span class="todo">{link.label}</span>}</li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ul>
+
+      <h3 class="subhead">{sections.earlier}</h3>
+      <ul class="earlier">
+        {
+          earlier.map((p) => (
+            <li>
+              <span class="earlier-name">{p.name}</span>
+              <span class="muted">{p.description}</span>
+              <span class="earlier-links">
+                {p.links.map((link) => (
+                  <a href={link.href}>{link.label}</a>
+                ))}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="column" aria-labelledby="skills-title">
+      <h2 id="skills-title">{sections.skills}</h2>
+      <dl class="skills">
+        {
+          skills.map((group) => (
+            <div>
+              <dt class="label">{group.name}</dt>
+              <dd>{group.items.join(', ')}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </section>
+
+    <section class="column" aria-labelledby="about-title">
+      <h2 id="about-title">{sections.about}</h2>
+      <p>{about}</p>
+    </section>
+
+    <section class="column contact" aria-labelledby="contact-title">
+      <h2 id="contact-title">{sections.contact}</h2>
+      <p>
+        {contact.text} <a href={`mailto:${contact.email}`}>{contact.email}</a>
+      </p>
+    </section>
   </main>
 </BaseLayout>
+
+<style>
+  main {
+    padding-block: clamp(48px, 10vw, 96px) 64px;
+  }
+
+  section {
+    margin-top: clamp(56px, 9vw, 88px);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 7vw, 3rem);
+  }
+
+  h2 {
+    margin: 0 0 24px;
+    font-size: 0.8125rem;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  .hero-title {
+    margin-top: 4px;
+    font-size: 1.25rem;
+    color: var(--muted);
+  }
+
+  .hero-intro {
+    margin-top: 24px;
+    font-size: 1.1875rem;
+  }
+
+  .meta {
+    margin-top: 16px;
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+
+  .muted {
+    color: var(--muted);
+    font-weight: 400;
+  }
+
+  .label {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .stack {
+    margin-top: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+
+  .todo {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--muted);
+    border-bottom: 1px dashed var(--border);
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .inline-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 16px;
+  }
+
+  .hero .inline-links {
+    margin-top: 24px;
+    font-weight: 500;
+  }
+
+  .demo-slot {
+    margin: 0;
+  }
+
+  .demo-slot-box {
+    display: grid;
+    place-items: center;
+    min-height: 280px;
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .card p:last-child {
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+
+  .timeline,
+  .featured {
+    display: grid;
+    gap: 32px;
+  }
+
+  .timeline > li > p,
+  .featured > li > p:not(.stack) {
+    margin-top: 6px;
+  }
+
+  .row-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 16px;
+  }
+
+  .subhead {
+    margin: 48px 0 16px;
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+
+  .earlier {
+    border-top: 1px solid var(--border);
+  }
+
+  .earlier li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9375rem;
+  }
+
+  .earlier-name {
+    font-weight: 500;
+  }
+
+  .earlier-links {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  .skills {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+  }
+
+  .skills div {
+    display: grid;
+    gap: 2px 24px;
+  }
+
+  @media (min-width: 640px) {
+    .skills div {
+      grid-template-columns: 140px 1fr;
+      align-items: baseline;
+    }
+  }
+
+  .skills dd {
+    margin: 0;
+  }
+</style>
