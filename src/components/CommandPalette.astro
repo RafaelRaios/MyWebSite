@@ -1,0 +1,219 @@
+---
+import { palette, profile, sections } from '../content';
+
+// Commands are plain data; the script below maps each `action` to what it does.
+const commands = [
+  { group: 'Go to', label: sections.work, action: 'goto', value: '#work' },
+  { group: 'Go to', label: sections.experience, action: 'goto', value: '#experience' },
+  { group: 'Go to', label: sections.projects, action: 'goto', value: '#projects' },
+  { group: 'Go to', label: sections.skills, action: 'goto', value: '#skills' },
+  { group: 'Go to', label: sections.contact, action: 'goto', value: '#contact' },
+  { group: 'Go to', label: sections.demo, action: 'goto', value: '#demo' },
+  { group: 'Contact', label: 'Copy email address', action: 'copy', value: profile.email },
+  { group: 'Contact', label: 'Send an email', action: 'open', value: `mailto:${profile.email}` },
+  ...profile.links
+    .filter((l) => l.href.startsWith('http'))
+    .map((l) => ({ group: 'Links', label: `Open ${l.label}`, action: 'open', value: l.href })),
+  { group: 'Site', label: 'Toggle dark mode', action: 'theme', value: '' },
+];
+---
+
+<dialog class="palette" aria-label="Command palette">
+  <div class="palette-search">
+    <span aria-hidden="true">›</span>
+    <input
+      type="text"
+      placeholder={palette.placeholder}
+      autocomplete="off"
+      spellcheck="false"
+      role="combobox"
+      aria-expanded="true"
+      aria-controls="palette-list"
+    />
+    <kbd>Esc</kbd>
+  </div>
+  <ul id="palette-list" role="listbox">
+    {
+      commands.map((c, i) => (
+        <li
+          id={`palette-item-${i}`}
+          role="option"
+          data-action={c.action}
+          data-value={c.value}
+          data-search={`${c.group} ${c.label}`.toLowerCase()}
+        >
+          <span class="palette-group">{c.group}</span>
+          <span>{c.label}</span>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="palette-empty" hidden>{palette.empty}</p>
+</dialog>
+
+<script>
+  import { copyText } from '../scripts/toast';
+  import { palette } from '../content';
+
+  const dialog = document.querySelector<HTMLDialogElement>('.palette')!;
+  const input = dialog.querySelector('input')!;
+  const items = [...dialog.querySelectorAll<HTMLLIElement>('[role="option"]')];
+  const empty = dialog.querySelector<HTMLElement>('.palette-empty')!;
+  let selected = 0;
+
+  const visible = () => items.filter((li) => !li.hidden);
+
+  function select(index: number) {
+    const list = visible();
+    if (list.length === 0) return;
+    selected = (index + list.length) % list.length;
+    items.forEach((li) => li.removeAttribute('aria-selected'));
+    list[selected].setAttribute('aria-selected', 'true');
+    list[selected].scrollIntoView({ block: 'nearest' });
+    input.setAttribute('aria-activedescendant', list[selected].id);
+  }
+
+  function filter() {
+    const words = input.value.toLowerCase().split(/\s+/).filter(Boolean);
+    items.forEach((li) => (li.hidden = !words.every((w) => li.dataset.search!.includes(w))));
+    empty.hidden = visible().length > 0;
+    select(0);
+  }
+
+  function open() {
+    input.value = '';
+    filter();
+    dialog.showModal();
+  }
+
+  function run(li: HTMLLIElement) {
+    dialog.close();
+    const { action, value } = li.dataset;
+    if (action === 'goto') document.querySelector(value!)?.scrollIntoView();
+    if (action === 'copy') copyText(value!, palette.copied);
+    if (action === 'open') window.open(value, value!.startsWith('http') ? '_blank' : '_self');
+    if (action === 'theme') document.querySelector<HTMLButtonElement>('.theme-toggle')?.click();
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      dialog.open ? dialog.close() : open();
+    }
+  });
+  document.querySelectorAll('[data-palette-open]').forEach((b) => b.addEventListener('click', open));
+
+  input.addEventListener('input', filter);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') select(selected + 1);
+    else if (e.key === 'ArrowUp') select(selected - 1);
+    else if (e.key === 'Enter') visible()[selected] && run(visible()[selected]);
+    else return;
+    e.preventDefault();
+  });
+  items.forEach((li) => {
+    li.addEventListener('click', () => run(li));
+    li.addEventListener('pointermove', () => select(visible().indexOf(li)));
+  });
+  // Clicking the backdrop closes it.
+  dialog.addEventListener('click', (e) => e.target === dialog && dialog.close());
+</script>
+
+<style>
+  .palette {
+    width: min(560px, calc(100vw - 32px));
+    max-height: min(480px, 70vh);
+    margin: 12vh auto auto;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: var(--bg);
+    color: var(--text);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .palette[open] {
+    display: flex;
+    flex-direction: column;
+    animation: palette-in 0.15s ease-out;
+  }
+
+  @keyframes palette-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+  }
+
+  .palette::backdrop {
+    background: rgb(0 0 0 / 0.4);
+    backdrop-filter: blur(3px);
+  }
+
+  .palette-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    font: 600 1rem var(--font-mono);
+    color: var(--accent);
+  }
+
+  .palette-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font: 1rem var(--font-sans);
+    outline: none;
+  }
+
+  kbd {
+    padding: 2px 6px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.6875rem;
+    color: var(--muted);
+  }
+
+  ul {
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+    overflow-y: auto;
+  }
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+
+  li[aria-selected='true'] {
+    background: var(--accent-soft);
+  }
+
+  .palette-group {
+    width: 64px;
+    flex-shrink: 0;
+    font: 0.75rem var(--font-mono);
+    color: var(--muted);
+  }
+
+  li[aria-selected='true'] .palette-group {
+    color: var(--accent);
+  }
+
+  .palette-empty {
+    margin: 0;
+    padding: 20px 16px 24px;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+</style>

@@ -1,5 +1,4 @@
 // Single source for every string on the site. Facts come only from PLAN.md's "Fonte de verdade".
-// Anything marked [confirm] or [email] is an open question in the plan, not final copy.
 
 export interface Link {
   label: string;
@@ -14,6 +13,8 @@ export interface Profile {
   location: string;
   languages: string[];
   email: string;
+  status: string;
+  query: string;
   links: Link[];
 }
 
@@ -62,15 +63,26 @@ export const profile: Profile = {
   intro:
     'I build products end to end, from Kotlin and Python APIs to React front ends. Lately that means AI agent workflows people use at work: text-to-SQL agents, LLM chatbots, and a guest assistant that knows when to hand off to a human.',
   location: 'Recife, Brazil · Remote, UTC−3',
-  languages: ['English', 'Portuguese', 'Spanish'],
-  email: '[email]',
+  languages: ['English', 'Portuguese', 'Spanish', 'German'],
+  email: 'rrcv2@cin.ufpe.br',
+  status: 'Open to remote roles',
+  query: "SELECT * FROM engineers WHERE city = 'Recife';",
   links: [
     { label: 'Resume (PDF)', href: '/resume.pdf' },
     { label: 'GitHub', href: 'https://github.com/RafaelRaios' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/in/rafael-rios-937645267/' },
-    { label: 'Email', href: 'mailto:[email]' },
+    { label: 'Email', href: 'mailto:rrcv2@cin.ufpe.br' },
   ],
 };
+
+export const nav: Link[] = [
+  { label: 'Work', href: '#work' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Contact', href: '#contact' },
+];
+
+export const footer = '-- end of results';
 
 export const sections = {
   demo: 'Text-to-SQL demo',
@@ -85,7 +97,6 @@ export const sections = {
 
 export const demo = {
   caption: 'A scripted replay of the text-to-SQL agents I build, with this site as the database.',
-  placeholder: 'Demo slot',
 };
 
 export const experience: Experience[] = [
@@ -95,7 +106,7 @@ export const experience: Experience[] = [
     dates: 'Aug 2025 – present',
     location: 'Remote',
     summary: 'Direct-booking platform and guest assistant for a US hotel chain.',
-    stack: ['React', 'TypeScript', 'Kotlin'],
+    stack: ['React', 'TypeScript', 'Kotlin', 'AI agents'],
   },
   {
     company: 'Visagio',
@@ -128,7 +139,10 @@ export const projects: Project[] = [
     year: '2024 – present',
     description: 'Core contributor to an open-source companion app for the board game Root.',
     stack: [],
-    links: [{ label: 'Repo and site [confirm]', href: '' }],
+    links: [
+      { label: 'Repo', href: 'https://github.com/rafaelrlc/root-da-galera' },
+      { label: 'Live', href: 'https://root-da-galera.vercel.app/' },
+    ],
     featured: true,
   },
   {
@@ -137,7 +151,7 @@ export const projects: Project[] = [
     stack: ['Angular', 'TypeScript', 'Tailwind CSS'],
     links: [
       { label: 'Repo', href: 'https://github.com/RafaelRaios/Pokedex1' },
-      { label: 'Live [confirm]', href: '' },
+      { label: 'Live', href: 'https://pokedex-steel-mu.vercel.app/' },
     ],
     featured: true,
   },
@@ -236,9 +250,127 @@ export const about =
   "I'm finishing a Computer Science degree at UFPE, in Recife (expected 2027), and I've worked on software for clients in the US and Europe since 2022. I like owning a problem from the first conversation to production, including the parts that aren't code, like explaining trade-offs to a client. Before that, I mentored other students in algorithms and databases and led a junior-enterprise team. I also made two small games in college, which is why one of them is still on this page.";
 
 export const contact = {
-  text: "I'm open to remote full-stack and applied-AI roles. Email is the fastest way to reach me:",
-  email: profile.email,
+  heading: "Let's talk",
+  text: "I'm open to remote full-stack and applied-AI roles. Email is the fastest way to reach me.",
+  channels: [
+    { label: 'Email', value: profile.email, href: `mailto:${profile.email}` },
+    { label: 'Personal email', value: 'rafael.rios.victal@hotmail.com', href: 'mailto:rafael.rios.victal@hotmail.com' },
+    { label: 'Phone', value: '+55 82 99113-1829', href: 'tel:+5582991131829' },
+  ],
 };
 
-// Filled in Prompt 4; rows must match experience and projects exactly.
-export const queries: Query[] = [];
+// Rows are computed from experience and projects, so the demo always matches the page.
+const AI_TOOLS = ['AI agents', 'smolagents', 'Claude API', 'OpenAI API', 'MCP'];
+const liveUrl = (p: Project) => p.links.find((l) => l.label === 'Live')?.href;
+const bare = (href: string) => href.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+export const queries: Query[] = [
+  {
+    label: 'Kotlin',
+    question: 'Where did I use Kotlin?',
+    sql: `SELECT company, role, dates
+FROM experience
+WHERE stack LIKE '%Kotlin%'
+ORDER BY start_date DESC;`,
+    columns: ['company', 'role', 'dates'],
+    rows: experience.filter((e) => e.stack.includes('Kotlin')).map((e) => [e.company, e.role, e.dates]),
+  },
+  {
+    label: 'React',
+    question: 'Where did I ship React?',
+    sql: `SELECT company, role, dates
+FROM experience
+WHERE stack LIKE '%React%'
+ORDER BY start_date DESC;`,
+    columns: ['company', 'role', 'dates'],
+    rows: experience.filter((e) => e.stack.includes('React')).map((e) => [e.company, e.role, e.dates]),
+  },
+  {
+    label: 'AI work',
+    question: 'Where did I work with AI?',
+    sql: `SELECT company, dates, ai_stack
+FROM experience
+WHERE ai_stack IS NOT NULL
+ORDER BY start_date DESC;`,
+    columns: ['company', 'dates', 'ai_stack'],
+    rows: experience
+      .filter((e) => e.stack.some((s) => AI_TOOLS.includes(s)))
+      .map((e) => [e.company, e.dates, e.stack.filter((s) => AI_TOOLS.includes(s)).join(', ')]),
+  },
+  {
+    label: 'Angular',
+    question: 'Which projects used Angular?',
+    sql: `SELECT name, description
+FROM projects
+WHERE stack LIKE '%Angular%';`,
+    columns: ['name', 'description'],
+    rows: projects.filter((p) => p.stack.includes('Angular')).map((p) => [p.name, p.description]),
+  },
+  {
+    label: 'Live sites',
+    question: 'Which projects can I open right now?',
+    sql: `SELECT name, live_url
+FROM projects
+WHERE live_url IS NOT NULL;`,
+    columns: ['name', 'live_url'],
+    rows: projects.flatMap((p) => {
+      const url = liveUrl(p);
+      return url ? [[p.name, bare(url)]] : [];
+    }),
+  },
+];
+
+// Free-form demo question: matches any technology against experience, projects and skills.
+export function techQuery(input: string): Query {
+  const term = input.replace(/['"%;\\]/g, '').trim().slice(0, 30);
+  const needle = term.toLowerCase();
+  // Whole-word match, so "Java" doesn't match "JavaScript".
+  const matches = (item: string) => {
+    const lower = item.toLowerCase();
+    return lower === needle || lower.split(/[\s,./-]+/).includes(needle);
+  };
+  const has = (items: string[]) => needle !== '' && items.some(matches);
+  return {
+    label: term,
+    question: `Where did I use ${term}?`,
+    sql: `SELECT 'experience' AS source, company AS name, dates
+FROM experience WHERE stack LIKE '%${term}%'
+UNION ALL
+SELECT 'projects', name, year
+FROM projects WHERE stack LIKE '%${term}%'
+UNION ALL
+SELECT 'skills', group_name, NULL
+FROM skills WHERE items LIKE '%${term}%';`,
+    columns: ['source', 'name', 'dates'],
+    rows: [
+      ...experience.filter((e) => has(e.stack)).map((e) => ['experience', e.company, e.dates]),
+      ...projects.filter((p) => has(p.stack)).map((p) => ['projects', p.name, p.year ?? '—']),
+      ...skills.filter((g) => has(g.items)).map((g) => ['skills', g.name, '—']),
+    ],
+  };
+}
+
+export const demoAsk = {
+  label: 'Ask about any technology',
+  placeholder: 'Try Python, Go, Tailwind…',
+  button: 'Run',
+};
+
+export const hero = {
+  timeLabel: 'local time in Recife',
+  timeZone: 'America/Recife',
+};
+
+export const palette = {
+  hint: ['Press', 'to explore the site'],
+  placeholder: 'Type a command or search…',
+  empty: 'No results. Try "email" or "projects".',
+  copied: 'Email copied to clipboard',
+};
+
+// Printed in the browser console, for the people who open DevTools.
+export const consoleGreeting = [
+  `SELECT greeting FROM visitors WHERE opened_devtools = TRUE;`,
+  `Hi! Thanks for looking under the hood. This site is Astro + a React island, source on request.`,
+  `Reach me at ${profile.email}.`,
+];

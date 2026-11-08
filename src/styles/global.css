@@ -14,14 +14,18 @@
   --border: #e2e2df;
   --accent: #0f7b5f;
   --accent-contrast: #ffffff;
+  --accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 12px 32px -12px rgb(0 0 0 / 0.12);
 
   --measure: 680px;
   --wide: 960px;
   --gutter: 16px;
 }
 
+/* Dark follows the system unless the toggle picked a theme (data-theme on <html>). */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
     --bg: #111113;
     --surface: #1b1b1f;
     --text: #ececee;
@@ -29,7 +33,32 @@
     --border: #2c2c32;
     --accent: #4fd1a5;
     --accent-contrast: #0b2a20;
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 40px -16px rgb(0 0 0 / 0.6);
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #111113;
+  --surface: #1b1b1f;
+  --text: #ececee;
+  --muted: #a1a1aa;
+  --border: #2c2c32;
+  --accent: #4fd1a5;
+  --accent-contrast: #0b2a20;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 40px -16px rgb(0 0 0 / 0.6);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+/* Smooth color swap when the theme toggle is used. */
+html.theme-switching * {
+  transition:
+    background-color 0.3s,
+    border-color 0.3s,
+    color 0.3s !important;
 }
 
 *,
@@ -40,6 +69,12 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+/* Keep anchored sections clear of the sticky nav. */
+[id] {
+  scroll-margin-top: 80px;
 }
 
 body {
@@ -62,6 +97,11 @@ h3 {
 a {
   color: var(--accent);
   text-underline-offset: 0.2em;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-contrast);
 }
 
 :focus-visible {
@@ -105,6 +145,24 @@ svg {
   border: 0;
 }
 
+/* Sections fade up as they scroll in, where the browser supports scroll-driven animations. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -114,4 +172,29 @@ svg {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 200;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow);
+  transform: translate(-50%, 16px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.toast[data-shown] {
+  transform: translate(-50%, 0);
+  opacity: 1;
 }

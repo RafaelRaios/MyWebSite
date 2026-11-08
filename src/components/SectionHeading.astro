@@ -1,0 +1,60 @@
+---
+// Each section reads like a table in the site's "database": a numbered name and a row count.
+interface Props {
+  id: string;
+  num: number;
+  title: string;
+  rows: number;
+}
+
+const { id, num, title, rows } = Astro.props;
+---
+
+<div class="section-head">
+  <h2 id={id}><span class="num">{String(num).padStart(2, '0')}</span>{title}</h2>
+  <span class="rule" aria-hidden="true"></span>
+  <span class="count" aria-hidden="true">{rows} {rows === 1 ? 'row' : 'rows'}</span>
+</div>
+
+<style>
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+  }
+
+  h2 {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    font: inherit;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .num {
+    color: var(--accent);
+  }
+
+  .num::before {
+    content: '-- ';
+    opacity: 0.6;
+  }
+
+  .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .count {
+    color: var(--muted);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+</style>
