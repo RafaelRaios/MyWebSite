@@ -37,3 +37,18 @@ desktop.ini
 
 # private plan
 PLAN.md
+
+# caches and tool output
+.cache/
+.eslintcache
+*.tsbuildinfo
+coverage/
+.lighthouseci/
+
+# Claude Code local files (shared settings in .claude/settings.json stay tracked)
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Windows and OneDrive temp files
+~$*
+*.tmp
