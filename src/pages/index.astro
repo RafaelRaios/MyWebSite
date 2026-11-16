@@ -4,6 +4,7 @@ import { QueryDemo } from '../components/QueryDemo';
 import SiteNav from '../components/SiteNav.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import CommandPalette from '../components/CommandPalette.astro';
+import EdgeField from '../components/EdgeField.astro';
 import {
   profile,
   nav,
@@ -22,6 +23,9 @@ import {
 const featured = projects.filter((p) => p.featured);
 const earlier = projects.filter((p) => !p.featured);
 const isExternal = (href: string) => href.startsWith('http');
+// External sites and the resume open in a new tab so the visitor keeps this page.
+const newTab = (href: string) =>
+  isExternal(href) || href.endsWith('.pdf') ? { target: '_blank', rel: 'noopener noreferrer' } : {};
 const initials = profile.name
   .split(' ')
   .map((part) => part[0])
@@ -33,6 +37,7 @@ const partClass = (part: string) => (part.startsWith("'") ? 'str' : /^[A-Z]+$/.t
 ---
 
 <BaseLayout title={`${profile.name} — ${profile.title}`} description={profile.tagline}>
+  <EdgeField />
   <SiteNav initials={initials} wordmark={profile.name.toLowerCase().replace(' ', '.')} links={nav} />
   <main id="top">
     <header class="hero">
@@ -57,7 +62,8 @@ const partClass = (part: string) => (part.startsWith("'") ? 'str' : /^[A-Z]+$/.t
                 <a
                   class:list={['button', { primary: i === 0 }]}
                   href={link.href}
-                  rel={isExternal(link.href) ? 'me' : undefined}
+                  target={newTab(link.href).target}
+                  rel={isExternal(link.href) ? 'me noopener noreferrer' : newTab(link.href).rel}
                 >
                   {link.label}
                   {isExternal(link.href) && <span aria-hidden="true">↗</span>}
@@ -143,7 +149,7 @@ const partClass = (part: string) => (part.startsWith("'") ? 'str' : /^[A-Z]+$/.t
               <ul class="buttons small">
                 {p.links.map((link) => (
                   <li>
-                    <a class="button" href={link.href}>
+                    <a class="button" href={link.href} {...newTab(link.href)}>
                       {link.label} <span aria-hidden="true">↗</span>
                     </a>
                   </li>
@@ -163,7 +169,7 @@ const partClass = (part: string) => (part.startsWith("'") ? 'str' : /^[A-Z]+$/.t
               <span class="muted">{p.description}</span>
               <span class="earlier-links">
                 {p.links.map((link) => (
-                  <a href={link.href}>{link.label}</a>
+                  <a href={link.href} {...newTab(link.href)}>{link.label}</a>
                 ))}
               </span>
             </li>
@@ -208,7 +214,7 @@ const partClass = (part: string) => (part.startsWith("'") ? 'str' : /^[A-Z]+$/.t
               <li>
                 <span class="label">{c.label}</span>
                 <span class="channel-value">
-                  <a href={c.href}>{c.value}</a>
+                  <a href={c.href} {...newTab(c.href)}>{c.value}</a>
                   {c.href.startsWith('mailto:') && (
                     <button class="copy" type="button" data-copy={c.value} aria-label={`Copy ${c.value}`}>
                       Copy
@@ -235,7 +241,7 @@ const partClass = (part: string) => (part.startsWith("'") ? 'str' : /^[A-Z]+$/.t
   import { copyText } from '../scripts/toast';
   import { consoleGreeting, palette } from '../content';
 
-  // Live clock in Recife, so remote teams can see the time difference at a glance.
+  // Live local clock, so remote teams can see the time difference at a glance.
   const clock = document.querySelector<HTMLTimeElement>('[data-clock]')!;
   const format = new Intl.DateTimeFormat('en-GB', {
     hour: '2-digit',

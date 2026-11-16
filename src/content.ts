@@ -62,11 +62,11 @@ export const profile: Profile = {
   tagline: 'Full-stack engineer who ships AI agent workflows that people use at work.',
   intro:
     'I build products end to end, from Kotlin and Python APIs to React front ends. Lately that means AI agent workflows people use at work: text-to-SQL agents, LLM chatbots, and a guest assistant that knows when to hand off to a human.',
-  location: 'Recife, Brazil · Remote, UTC−3',
+  location: 'Brazil · Remote, UTC−3',
   languages: ['English', 'Portuguese', 'Spanish', 'German'],
   email: 'rrcv2@cin.ufpe.br',
   status: 'Open to remote roles',
-  query: "SELECT * FROM engineers WHERE city = 'Recife';",
+  query: "SELECT * FROM engineers WHERE country = 'Brazil';",
   links: [
     { label: 'Resume (PDF)', href: '/resume.pdf' },
     { label: 'GitHub', href: 'https://github.com/RafaelRaios' },
@@ -247,7 +247,7 @@ export const skills: SkillGroup[] = [
 ];
 
 export const about =
-  "I'm finishing a Computer Science degree at UFPE, in Recife (expected 2027), and I've worked on software for clients in the US and Europe since 2022. I like owning a problem from the first conversation to production, including the parts that aren't code, like explaining trade-offs to a client. Before that, I mentored other students in algorithms and databases and led a junior-enterprise team. I also made two small games in college, which is why one of them is still on this page.";
+  "I'm finishing a Computer Science degree at UFPE (expected 2027), and I've worked on software for clients in the US and Europe since 2022. I like owning a problem from the first conversation to production, including the parts that aren't code, like explaining trade-offs to a client. Before that, I mentored other students in algorithms and databases and led a junior-enterprise team. I also made two small games in college, which is why one of them is still on this page.";
 
 export const contact = {
   heading: "Let's talk",
@@ -357,7 +357,7 @@ export const demoAsk = {
 };
 
 export const hero = {
-  timeLabel: 'local time in Recife',
+  timeLabel: 'local time in Brazil',
   timeZone: 'America/Recife',
 };
 
