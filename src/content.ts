@@ -61,7 +61,7 @@ export const profile: Profile = {
   title: 'Full-stack software engineer',
   tagline: 'Full-stack engineer who ships AI agent workflows that people use at work.',
   intro:
-    'I build products end to end, from Kotlin and Python APIs to React front ends. Lately that means AI agent workflows people use at work: text-to-SQL agents, LLM chatbots, and a guest assistant that knows when to hand off to a human.',
+    'I build products end to end, from Python and Kotlin APIs to React front ends. Lately that means AI agent workflows people use at work: text-to-SQL agents and LLM chatbots with RAG over company documents.',
   location: 'Brazil · Remote, UTC−3',
   languages: ['English', 'Portuguese', 'Spanish', 'German'],
   email: 'rrcv2@cin.ufpe.br',
@@ -101,34 +101,19 @@ export const demo = {
 
 export const experience: Experience[] = [
   {
-    company: 'Avanzzada',
-    role: 'Senior Software Engineer',
-    dates: 'Aug 2025 – present',
-    location: 'Remote',
-    summary: 'Direct-booking platform and guest assistant for a US hotel chain.',
-    stack: ['React', 'TypeScript', 'Kotlin', 'AI agents'],
-  },
-  {
     company: 'Visagio',
     role: 'Software Engineer',
-    dates: 'Sep 2024 – Jul 2025',
+    dates: 'May 2025 – Aug 2026',
     location: 'Remote',
     summary:
-      'LLM chatbots, text-to-SQL, and heuristic optimization for a global industrial client; worked daily in English with teams in Germany, the US, India and France.',
-    stack: ['Python', 'smolagents', 'Claude API', 'OpenAI API', 'MCP', 'FastAPI', 'Kotlin', 'React', 'Angular', 'Azure', 'AWS'],
+      'Two projects. First, a heuristic optimization tool that plans which grid works a power distribution utility builds, affecting the daily service of millions of people: sole owner of the front end, worked on the back end and database, and the only developer by the final stage. Then, three LLM chatbots for a global industrial client (RAG over PDFs, text-to-SQL over tables) that teams relied on daily. I was the lead developer of one of them, migrating it to a smolagents agent and building its text-to-SQL layer, back end and end-to-end integration, and I co-built a unified chat front end for all three on top of Open WebUI. I worked directly with the client teams in Germany, the US, Brazil, India and France, with most meetings held entirely in English, and adjusted my hours across time zones to balance the project with a full-time degree.',
+    stack: ['Python', 'smolagents', 'Claude API', 'OpenAI API', 'MCP', 'Open WebUI', 'FastAPI', 'Kotlin', 'React', 'Angular', 'Azure', 'AWS'],
   },
   {
     company: 'Centro de Informática, UFPE',
-    role: 'Software Engineer',
+    role: 'Teaching Assistant',
     dates: 'Sep 2022 – Aug 2024',
-    summary: 'Wrote algorithm problems for online judges and mentored students in algorithms and databases.',
-    stack: [],
-  },
-  {
-    company: 'CITi UFPE',
-    role: 'Trainee',
-    dates: 'May – Aug 2022',
-    summary: 'Led an agile team that delivered a platform connecting psychologists with clients.',
+    summary: 'Teaching assistant for algorithms, data structures and databases; wrote algorithm problems for online judges.',
     stack: [],
   },
 ];
@@ -137,8 +122,9 @@ export const projects: Project[] = [
   {
     name: 'Root da Galera',
     year: '2024 – present',
-    description: 'Core contributor to an open-source companion app for the board game Root.',
-    stack: [],
+    description:
+      'Core contributor to a match tracker and leaderboard for the board game Root. I moved users from PINs hardcoded in environment variables into the database without losing a single match record, implemented the game rules in match registration and the faction draft, and built the admin and in-person draft screens, guest players, official vs. test matches, maps, and most of the stats filters. I also prototyped a Gemini rules assistant grounded in the rulebooks and card database.',
+    stack: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'PostgreSQL', 'Gemini API'],
     links: [
       { label: 'Repo', href: 'https://github.com/rafaelrlc/root-da-galera' },
       { label: 'Live', href: 'https://root-da-galera.vercel.app/' },
@@ -147,7 +133,7 @@ export const projects: Project[] = [
   },
   {
     name: 'Pokédex',
-    description: 'A Pokédex built with Angular, TypeScript and Tailwind, consuming the PokéAPI and deployed on Vercel.',
+    description: 'A Pokédex built with Angular, TypeScript and Tailwind, consuming the PokéAPI and deployed on Vercel. Built solo, without AI assistance.',
     stack: ['Angular', 'TypeScript', 'Tailwind CSS'],
     links: [
       { label: 'Repo', href: 'https://github.com/RafaelRaios/Pokedex1' },
@@ -157,7 +143,7 @@ export const projects: Project[] = [
   },
   {
     name: 'Alagoaninho Adventures',
-    description: 'College game.',
+    description: 'A game built for a college course.',
     stack: [],
     links: [{ label: 'Repo', href: 'https://github.com/RafaelRaios/Alagoaninho-Adventures' }],
     featured: false,
@@ -214,27 +200,28 @@ export const caseStudies: CaseStudy[] = [
     title: 'Text-to-SQL agents for industrial chatbots',
     org: 'Visagio',
     summary:
-      'Owned the text-to-SQL layer of internal assistants for a global industrial client, so teams could query their own data in plain language.',
+      'Lead developer of one of the internal assistants for a global industrial client: migrated it to a smolagents agent and built the text-to-SQL layer, with curated schema context, parameterized Python tools for common queries and SQL errors fed back to the agent, plus the back end and end-to-end integration, so teams could query their own data in plain language.',
   },
   {
-    slug: 'hotel-direct-booking',
-    title: 'Direct booking for a US hotel chain',
-    org: 'Avanzzada',
+    slug: 'rag-chatbots',
+    title: 'LLM chatbots over company documents',
+    org: 'Visagio',
     summary:
-      'Took over nearly all engineering on a platform that moves bookings away from third-party channels, plus a guest assistant that routes requests to the right staff.',
+      'Worked on three chatbots that answer safety, quality and maintenance questions from SharePoint PDFs with RAG, with access control by permission table or admin-assigned role. Co-built a unified chat front end for all of them on top of Open WebUI, giving the team full control over customization.',
   },
   {
     slug: 'heuristic-optimization',
-    title: 'Heuristic optimization for capital spending',
+    title: 'Infrastructure planning for a power utility',
     org: 'Visagio',
     summary:
-      'Built and calibrated a model to allocate infrastructure projects and cut unnecessary capital expenditure, as the sole developer in key stages.',
+      'Full-stack work on a heuristic optimization tool that decides which grid works a power distribution utility builds and where, affecting the daily service of millions of people. Sole owner of the front end, and the only developer by the final stage.',
   },
   {
     slug: 'root-da-galera',
     title: 'Root da Galera',
     org: 'Open source',
-    summary: 'Core contributor to an open-source companion app for the board game Root.',
+    summary:
+      'Migrated users from hardcoded PINs to the database with no lost match records, implemented the game rules in match registration and the faction draft, and prototyped a Gemini rules assistant grounded in the rulebooks and card database.',
   },
 ];
 
@@ -243,11 +230,11 @@ export const skills: SkillGroup[] = [
   { name: 'Front-end', items: ['React', 'Redux', 'Angular', 'Tailwind CSS'] },
   { name: 'Back-end', items: ['Node.js', 'FastAPI', 'REST APIs'] },
   { name: 'AI', items: ['Claude, OpenAI and Gemini APIs', 'RAG', 'MCP', 'text-to-SQL', 'smolagents'] },
-  { name: 'Cloud and tools', items: ['AWS', 'Azure', 'Git', 'Vercel'] },
+  { name: 'Cloud and tools', items: ['AWS', 'Azure', 'Docker', 'Kubernetes', 'pytest', 'Git', 'Vercel'] },
 ];
 
 export const about =
-  "I'm finishing a Computer Science degree at UFPE (expected 2027), and I've worked on software for clients in the US and Europe since 2022. I like owning a problem from the first conversation to production, including the parts that aren't code, like explaining trade-offs to a client. Before that, I mentored other students in algorithms and databases and led a junior-enterprise team. I also made two small games in college, which is why one of them is still on this page.";
+  "I'm finishing a Computer Science degree at UFPE (expected 2027). At Visagio I built LLM chatbots and text-to-SQL agents for a global industrial client, working in English with its teams in five countries while finishing my degree. I like owning a problem from the first conversation to production, including the parts that aren't code, like explaining trade-offs to a client. Before that, I was a teaching assistant in algorithms, data structures and databases, and took a competitive programming course. I also made two small games in college, which is why one of them is still on this page.";
 
 export const contact = {
   heading: "Let's talk",
